@@ -1,0 +1,14 @@
+.host a {
+  display: block;
+  background: #f1f1f1;
+  margin: 5px;
+}
+.host .box {
+  border: 5px solid grey;
+  margin: 5px;
+}
+.host-header {
+  width: 100%;
+  height: 50px;
+  background: yellow;
+}
