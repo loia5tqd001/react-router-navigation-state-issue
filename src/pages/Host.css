@@ -11,4 +11,11 @@
   width: 100%;
   height: 50px;
   background: yellow;
+  position: relative;
+}
+
+.host-header .host-header-title {
+  position: absolute;
+  top: 0;
+  right: 100px;
 }
