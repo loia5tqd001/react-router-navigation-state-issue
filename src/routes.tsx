@@ -15,9 +15,9 @@ import { createBrowserRouter, defer } from 'react-router-dom';
 export const router = createBrowserRouter([
   {
     path: '/',
-    loader: async () => {
+    loader: () => {
       return defer({
-        data: await fetch(
+        data: fetch(
           `https://hub.dummyapis.com/delay?seconds=3&fetch_header_data`
         ).then(() => 'Header Data Fetched'),
       });
