@@ -52,18 +52,6 @@ export const router = createBrowserRouter([
             lazy: () => import('./pages/OrderListPage'),
           },
           {
-            path: '?tab=1',
-            lazy: () => import('./pages/OrderListPage'),
-          },
-          {
-            path: '?tab=2',
-            lazy: () => import('./pages/OrderListPage'),
-          },
-          {
-            path: '?tab=3',
-            lazy: () => import('./pages/OrderListPage'),
-          },
-          {
             path: 'order/:orderId',
             // loader,
             // Component: OrderDetailPage,

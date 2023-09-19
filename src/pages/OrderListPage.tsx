@@ -61,13 +61,13 @@ export function Component() {
     <div>
       <LoaderProvider>
         <div className='tab-container'>
-          <NavLink to='/user/purchase?tab=1' style={style}>
+          <NavLink to={{ search: 'tab=1' }} style={style}>
             All
           </NavLink>
-          <NavLink to='/user/purchase?tab=2' style={style}>
+          <NavLink to={{ search: 'tab=2' }} style={style}>
             To Receive
           </NavLink>
-          <NavLink to='/user/purchase?tab=3' style={style}>
+          <NavLink to={{ search: 'tab=3' }} style={style}>
             Completed
           </NavLink>
         </div>

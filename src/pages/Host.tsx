@@ -46,7 +46,8 @@ function NavigationLoaderProvider({
         color='#f11946'
         ref={ref}
         height={5}
-        waitingTime={300}
+        waitingTime={400}
+        loaderSpeed={300}
         {...otherProps}
       />
       {children}
