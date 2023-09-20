@@ -1,82 +1,88 @@
-import { useEffect, useRef } from 'react';
-import {
-  Await,
-  Link,
-  LoaderFunction,
-  Outlet,
-  useLoaderData,
-  useNavigation,
-} from 'react-router-dom';
+import { useIsFetching } from '@tanstack/react-query';
+import { useEffect, useMemo, useRef } from 'react';
+import { Link, Outlet, useLoaderData, useNavigation } from 'react-router-dom';
 import LoadingBar, {
-  IProps as TopLoadingBarProps,
   LoadingBarRef,
+  IProps as TopLoadingBarProps,
 } from 'react-top-loading-bar';
 import './Host.css';
-import { LoaderProvider } from './Loader';
+import { Waiter } from './Loader';
 
-function NavigationLoaderProvider({
-  children,
-  ...otherProps
-}: React.PropsWithChildren & TopLoadingBarProps) {
-  const navigation = useNavigation();
-  const isRunning = useRef(false);
-  const ref = useRef<LoadingBarRef>(null);
-
-  console.log('>>', { navigation: navigation.state });
+const useLoadingBar = (shouldLoadingBarRunning: boolean) => {
+  const loadingBarRef = useRef<LoadingBarRef>(null);
+  const isLoadingBarRunning = useRef(false);
 
   useEffect(() => {
     let timeout: any;
 
-    if (navigation.state === 'loading') {
+    if (shouldLoadingBarRunning) {
       timeout = setTimeout(() => {
-        ref.current?.continuousStart();
-        isRunning.current = true;
+        loadingBarRef.current?.continuousStart();
+        isLoadingBarRunning.current = true;
       }, 300);
     }
 
-    if (navigation.state === 'idle' && isRunning.current) {
-      ref.current?.complete();
+    if (!shouldLoadingBarRunning && isLoadingBarRunning.current) {
+      loadingBarRef.current?.complete();
     }
+
     return () => clearTimeout(timeout);
-  }, [navigation.state]);
+  }, [shouldLoadingBarRunning]);
+
+  return useMemo(
+    () =>
+      (...otherProps: any) =>
+        (
+          <LoadingBar
+            color='#f11946'
+            height={3}
+            ref={loadingBarRef}
+            waitingTime={400}
+            loaderSpeed={300}
+            {...otherProps}
+          />
+        ),
+    []
+  );
+};
+
+function GlobalLoaderProvider({
+  children,
+  ...otherProps
+}: React.PropsWithChildren & TopLoadingBarProps) {
+  const navigation = useNavigation();
+  const isRQFetching = useIsFetching();
+
+  const LoadingBarComponent = useLoadingBar(
+    navigation.state === 'loading' || isRQFetching > 0
+  );
+
+  console.log('>>', { navigation: navigation.state, isRQFetching });
 
   return (
     <>
-      <LoadingBar
-        color='#f11946'
-        ref={ref}
-        height={5}
-        waitingTime={400}
-        loaderSpeed={300}
-        {...otherProps}
-      />
+      <LoadingBarComponent {...otherProps} />
       {children}
     </>
   );
 }
 
-// export const loader: LoaderFunction = () => {
-//   return fetch(`https://hub.dummyapis.com/delay?seconds=1&fetch_header_data`);
-// };
-
 export function Component() {
   const { data } = useLoaderData() as { data?: string };
 
   return (
-    <NavigationLoaderProvider>
+    <GlobalLoaderProvider>
       <div className='host'>
         <div className='host-header box'>
           <Link to='/'>Home</Link>
           <Link to='/user/purchase'>Order List</Link>
           <h3 className='host-header-title'>
-            <LoaderProvider>
-              <Await resolve={data}>{(data) => data}</Await>
-            </LoaderProvider>
+            <Waiter resolve={data}>{(data) => data}</Waiter>
           </h3>
         </div>
         <Outlet />
       </div>
-    </NavigationLoaderProvider>
+    </GlobalLoaderProvider>
   );
 }
 

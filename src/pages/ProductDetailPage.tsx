@@ -1,15 +1,27 @@
-import { LoaderFunction, useLocation } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
+import axios from 'axios';
+import { LoaderFunction, useParams } from 'react-router-dom';
+import { queryClient } from '..';
 
-export const loader: LoaderFunction = () => {
-  return fetch(`https://hub.dummyapis.com/delay?seconds=1&product_detail_page`);
+const pdpQuery = (productId: string | undefined) => ({
+  queryKey: ['product_detail_page', productId],
+  queryFn: async () =>
+    axios
+      .get(`https://hub.dummyapis.com/delay?seconds=1&product_detail_page`)
+      .then(() => productId),
+});
+
+export const loader: LoaderFunction = ({ params }) => {
+  return queryClient.ensureQueryData(pdpQuery(params.productId));
 };
 
 export function Component() {
-  const location = useLocation();
+  const params = useParams();
+  const { data: productId } = useQuery(pdpQuery(params.productId));
 
   return (
     <div className='App'>
-      <h1>ProductDetailPage {location.pathname}</h1>
+      <h1>ProductDetailPage {productId}</h1>
     </div>
   );
 }

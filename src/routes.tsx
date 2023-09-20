@@ -1,3 +1,4 @@
+import axios from 'axios';
 import { createBrowserRouter, defer } from 'react-router-dom';
 // import Host from './pages/Host';
 // import HomePage from './pages/HomePage';
@@ -6,20 +7,14 @@ import { createBrowserRouter, defer } from 'react-router-dom';
 // import OrderListPage from './pages/OrderListPage';
 // import OrderDetailPage from './pages/OrderDetailPage';
 
-// const loader = ({ request }: any) => {
-//   return fetch(
-//     `https://raw.githubusercontent.com/NearHuscarl/leetcode/master/src/api/list/all.json?${request.url}`
-//   );
-// };
-
 export const router = createBrowserRouter([
   {
     path: '/',
     loader: () => {
       return defer({
-        data: fetch(
-          `https://hub.dummyapis.com/delay?seconds=3&fetch_header_data`
-        ).then(() => 'Header Data Fetched'),
+        data: axios
+          .get(`https://hub.dummyapis.com/delay?seconds=3&fetch_header_data`)
+          .then(() => 'Header Data Fetched'),
       });
     },
     // Component: Host,
@@ -28,35 +23,40 @@ export const router = createBrowserRouter([
     children: [
       {
         index: true,
-        // loader,
         // Component: HomePage,
         lazy: () => import('./pages/HomePage'),
-        shouldRevalidate: () => false,
+        shouldRevalidate: ({ currentUrl }) => {
+          // WTF:
+          // Home Page -> Order List Page (why call product_detail_list API here?)
+          console.log('>>  ~ file: routes.tsx:29 ~ currentUrl:', currentUrl);
+          return currentUrl.pathname === '';
+        },
       },
       {
         path: ':productId',
         // loader,
         // Component: ProductDetailPage,
         lazy: () => import('./pages/ProductDetailPage'),
-        shouldRevalidate: () => false,
+        // shouldRevalidate: () => false,
       },
       {
         path: 'user/purchase',
         // loader,
         // Component: UserPage,
         lazy: () => import('./pages/UserPage'),
-        shouldRevalidate: () => false,
+        // shouldRevalidate: () => false,
         children: [
           {
             path: '',
             lazy: () => import('./pages/OrderListPage'),
+            // shouldRevalidate: () => false,
           },
           {
             path: 'order/:orderId',
             // loader,
             // Component: OrderDetailPage,
             lazy: () => import('./pages/OrderDetailPage'),
-            shouldRevalidate: () => false,
+            // shouldRevalidate: () => false,
           },
         ],
       },
