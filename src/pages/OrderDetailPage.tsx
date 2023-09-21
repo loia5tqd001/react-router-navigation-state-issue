@@ -6,10 +6,7 @@ import { Waiter } from './Loader';
 
 const odpQuery = (orderId: string | undefined) => ({
   queryKey: ['order_detail_page', orderId],
-  queryFn: async () =>
-    axios
-      .get(`https://hub.dummyapis.com/delay?seconds=2&order_detail_page`)
-      .then(() => orderId),
+  queryFn: async () => axios.get(`/api/fetch_order_detail`).then(() => orderId),
 });
 
 export const loader: LoaderFunction = ({ params }) => {
@@ -19,13 +16,14 @@ export const loader: LoaderFunction = ({ params }) => {
 };
 
 export function Component() {
+  console.log('>>Render: OrderDetailPage');
   const params = useParams();
-  const { data } = useQuery(odpQuery(params.orderId));
+  const { data: orderId } = useQuery(odpQuery(params.orderId));
 
   return (
-    <Waiter resolve={data}>
-      {(orderId: typeof data) => <h1>OrderDetailPage {orderId}</h1>}
-    </Waiter>
+    <h1>
+      OrderDetailPage <Waiter>{orderId}</Waiter>
+    </h1>
   );
 }
 

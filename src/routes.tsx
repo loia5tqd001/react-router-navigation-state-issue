@@ -12,25 +12,17 @@ export const router = createBrowserRouter([
     path: '/',
     loader: () => {
       return defer({
-        data: axios
-          .get(`https://hub.dummyapis.com/delay?seconds=3&fetch_header_data`)
-          .then(() => 'Header Data Fetched'),
+        data: axios.get('/api/fetch_header_data').then((res) => res.data.data),
       });
     },
     // Component: Host,
     lazy: () => import('./pages/Host'),
-    shouldRevalidate: () => false,
+    // shouldRevalidate: () => false,
     children: [
       {
         index: true,
         // Component: HomePage,
         lazy: () => import('./pages/HomePage'),
-        shouldRevalidate: ({ currentUrl }) => {
-          // WTF:
-          // Home Page -> Order List Page (why call product_detail_list API here?)
-          console.log('>>  ~ file: routes.tsx:29 ~ currentUrl:', currentUrl);
-          return currentUrl.pathname === '';
-        },
       },
       {
         path: ':productId',

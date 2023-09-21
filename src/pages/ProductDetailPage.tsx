@@ -6,9 +6,7 @@ import { queryClient } from '..';
 const pdpQuery = (productId: string | undefined) => ({
   queryKey: ['product_detail_page', productId],
   queryFn: async () =>
-    axios
-      .get(`https://hub.dummyapis.com/delay?seconds=1&product_detail_page`)
-      .then(() => productId),
+    axios.get(`/api/fetch_product_detail`).then(() => productId),
 });
 
 export const loader: LoaderFunction = ({ params }) => {
@@ -16,6 +14,7 @@ export const loader: LoaderFunction = ({ params }) => {
 };
 
 export function Component() {
+  console.log('>>Render: ProductDetailPage');
   const params = useParams();
   const { data: productId } = useQuery(pdpQuery(params.productId));
 

@@ -1,17 +1,28 @@
 import { Suspense } from 'react';
-import { Await, AwaitProps } from 'react-router-dom';
+import { Await, AwaitProps, useLoaderData } from 'react-router-dom';
 import './Loader.css';
 
-export function Component() {
-  return <div className='circle-spin-2'></div>;
+export function LoadingBarCSS() {
+  return <div className='loading-bar loading-bar--active' />;
 }
 
-export function Waiter(awaitProps: AwaitProps) {
+export function SpinnerCSS() {
+  return <div className='circle-spin' />;
+}
+
+type Props = Omit<AwaitProps, 'resolve'> &
+  Partial<Pick<AwaitProps, 'resolve'>> & {
+    waitFor?: (loaderData: any) => any;
+  };
+
+export function Waiter({ waitFor, ...otherProps }: Props) {
+  console.log('>>Render: Waiter');
+  const loaderData = useLoaderData() as any;
+  const toResolve = waitFor?.(loaderData) || loaderData.data;
+
   return (
-    <Suspense fallback={<Component />}>
-      <Await {...awaitProps} />
+    <Suspense fallback={<LoadingBarCSS />}>
+      <Await resolve={toResolve} {...otherProps} />
     </Suspense>
   );
 }
-
-export default Component;
