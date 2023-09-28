@@ -36,7 +36,7 @@ export const loader: LoaderFunction = ({ request }) => {
 export function Component() {
   console.log('>>Render: OrderListPage');
   const [searchParams, setSearchPrams] = useSearchParams();
-  const { data: orderList } = useQuery(
+  const { data: orderList, isInitialLoading } = useQuery(
     getOrderListQuery(searchParams.get('tab'))
   );
   const { data: orderCount } = useQuery(getOrderCountQuery());
@@ -65,6 +65,16 @@ export function Component() {
           Completed {orderCount ? `(${orderCount[1]})` : null}
         </NavLink>
       </div>
+
+      {/* {isInitialLoading
+        ? 'loading'
+        : orderList?.map((id: number) => {
+            return (
+              <Link to={'/user/purchase/order/' + id} key={Math.random()}>
+                Order {id}
+              </Link>
+            );
+          })} */}
 
       <Waiter waitFor={(data) => data.orderList}>
         {orderList?.map((id: number) => {
